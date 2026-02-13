@@ -1,0 +1,30 @@
+package main
+
+// DeviceState represents the current state of a Bluetooth device.
+type DeviceState string
+
+const (
+	StateConnected  DeviceState = "connected"
+	StateConnecting DeviceState = "connecting"
+	StateIdle       DeviceState = "idle"
+	StateDisabled   DeviceState = "disabled"
+)
+
+// IPCRequest is sent from the CLI client to the daemon.
+type IPCRequest struct {
+	Command string `json:"command"`          // "status" | "toggle"
+	Device  string `json:"device,omitempty"` // MAC address, optional
+}
+
+// IPCResponse is sent from the daemon back to the CLI client.
+type IPCResponse struct {
+	State  string `json:"state,omitempty"`  // "connected", "connecting", "idle", "disabled"
+	Device string `json:"device,omitempty"` // MAC address of active device
+	Error  string `json:"error,omitempty"`
+}
+
+// DeviceConfig represents a single device entry from the config file.
+type DeviceConfig struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}

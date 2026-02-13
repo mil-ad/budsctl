@@ -24,7 +24,6 @@ func socketPath() string {
 
 type daemon struct {
 	bz           *bluez
-	cfg          []DeviceConfig
 	activeDevice string // MAC address of the active device
 	mu           sync.Mutex
 }
@@ -42,9 +41,9 @@ func (d *daemon) handleRequest(req IPCRequest) IPCResponse {
 		return IPCResponse{State: string(state), Device: d.activeDevice}
 
 	case "toggle":
-		addr, err := resolveDevice(d.cfg, req.Device)
-		if err != nil {
-			return IPCResponse{Error: err.Error()}
+		addr := req.Device
+		if addr == "" {
+			return IPCResponse{Error: "device address is required"}
 		}
 
 		// Switching devices: disconnect+block the old one first.
@@ -124,11 +123,6 @@ func (d *daemon) watchSignals(sigCh chan *dbus.Signal) {
 }
 
 func runDaemon() error {
-	cfg, err := loadConfig()
-	if err != nil {
-		return err
-	}
-
 	bz, err := newBluez()
 	if err != nil {
 		return err
@@ -145,7 +139,7 @@ func runDaemon() error {
 	defer os.Remove(sock)
 	defer ln.Close()
 
-	d := &daemon{bz: bz, cfg: cfg}
+	d := &daemon{bz: bz}
 
 	// Signal watcher goroutine.
 	dbusSignals := bz.subscribePropertyChanges()

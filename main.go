@@ -7,7 +7,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: budsctl <daemon|status|toggle> [device]")
+		fmt.Fprintln(os.Stderr, "usage: budsctl <daemon|status|toggle <device>>")
 		os.Exit(1)
 	}
 
@@ -18,11 +18,11 @@ func main() {
 	case "status":
 		err = runStatus()
 	case "toggle":
-		device := ""
-		if len(os.Args) > 2 {
-			device = os.Args[2]
+		if len(os.Args) < 3 {
+			fmt.Fprintln(os.Stderr, "usage: budsctl toggle <device>")
+			os.Exit(1)
 		}
-		err = runToggle(device)
+		err = runToggle(os.Args[2])
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", os.Args[1])
 		os.Exit(1)

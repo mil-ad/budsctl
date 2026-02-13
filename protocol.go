@@ -23,8 +23,3 @@ type IPCResponse struct {
 	Error  string `json:"error,omitempty"`
 }
 
-// DeviceConfig represents a single device entry from the config file.
-type DeviceConfig struct {
-	Name    string `json:"name"`
-	Address string `json:"address"`
-}

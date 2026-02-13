@@ -15,14 +15,14 @@ budsctl uses a daemon/client architecture: a long-running daemon talks to BlueZ 
 ## Usage
 
 ```
-budsctl <daemon|status|toggle> [device]
+budsctl <daemon|status|toggle <device>>
 ```
 
 **`daemon`** — Start the background daemon. It listens on `$XDG_RUNTIME_DIR/budsctl.sock` and watches for BlueZ property changes (e.g. auto-blocking a device when it disconnects).
 
 **`status`** — Print the current state of the active device as JSON.
 
-**`toggle [device]`** — Toggle the connection state of a device. If no device address is given, the first device from the config file is used. When switching between devices, the previously active device is automatically disconnected and blocked.
+**`toggle <device>`** — Toggle the connection state of a device by MAC address. When switching between devices, the previously active device is automatically disconnected and blocked.
 
 The toggle cycle works as follows:
 
@@ -33,15 +33,6 @@ The toggle cycle works as follows:
 | idle | Unblock and connect |
 | disabled | Power on adapter, unblock, and connect |
 
-## Configuration
-
-Create `~/.config/budsctl/devices.json` (or `$XDG_CONFIG_HOME/budsctl/devices.json`):
-
-```json
-[
-  {"name": "AirPods Pro", "address": "AA:BB:CC:DD:EE:FF"}
-]
-```
 ## Requirements
 
 - Linux with BlueZ (`bluetooth.service` must be running)

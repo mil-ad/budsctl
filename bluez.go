@@ -150,7 +150,7 @@ func (b *bluez) resolveState(addr string) DeviceState {
 	if !blocked {
 		return StateConnecting
 	}
-	return StateIdle
+	return StateBlocked
 }
 
 // --- toggle ---
@@ -165,15 +165,15 @@ func (b *bluez) toggle(addr string) (DeviceState, error) {
 		if err := b.setBlocked(addr, true); err != nil {
 			return state, fmt.Errorf("block: %w", err)
 		}
-		return StateIdle, nil
+		return StateBlocked, nil
 
 	case StateConnecting:
 		if err := b.setBlocked(addr, true); err != nil {
 			return state, fmt.Errorf("block: %w", err)
 		}
-		return StateIdle, nil
+		return StateBlocked, nil
 
-	case StateIdle:
+	case StateBlocked:
 		if err := b.setBlocked(addr, false); err != nil {
 			return state, fmt.Errorf("unblock: %w", err)
 		}

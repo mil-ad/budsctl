@@ -30,7 +30,7 @@ The toggle cycle works as follows:
 |---|---|
 | connected | Disconnect and block |
 | connecting | Block |
-| idle | Unblock and connect |
+| blocked | Unblock and connect |
 | disabled | Power on adapter, unblock, and connect |
 
 ## Requirements

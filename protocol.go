@@ -6,7 +6,7 @@ type DeviceState string
 const (
 	StateConnected  DeviceState = "connected"
 	StateConnecting DeviceState = "connecting"
-	StateIdle       DeviceState = "idle"
+	StateBlocked    DeviceState = "blocked"
 	StateDisabled   DeviceState = "disabled"
 )
 
@@ -18,7 +18,7 @@ type IPCRequest struct {
 
 // IPCResponse is sent from the daemon back to the CLI client.
 type IPCResponse struct {
-	State  string `json:"state,omitempty"`  // "connected", "connecting", "idle", "disabled"
+	State  string `json:"state,omitempty"`  // "connected", "connecting", "blocked", "disabled"
 	Device string `json:"device,omitempty"` // MAC address of active device
 	Error  string `json:"error,omitempty"`
 }

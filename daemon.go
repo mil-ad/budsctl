@@ -104,10 +104,9 @@ func (d *daemon) watchSignals(sigCh chan *dbus.Signal) {
 			continue
 		}
 		connected, ok := connVar.Value().(bool)
-		if !ok || connected {
+		if !ok {
 			continue
 		}
-		// Connected flipped to false — check if it's the active device.
 		mac := macFromPath(sig.Path)
 		d.mu.Lock()
 		active := d.activeDevice
@@ -115,6 +114,13 @@ func (d *daemon) watchSignals(sigCh chan *dbus.Signal) {
 		if mac == "" || mac != active {
 			continue
 		}
+
+		if connected {
+			log.Printf("active device %s connected, switching audio", mac)
+			go switchAudio(mac)
+			continue
+		}
+
 		log.Printf("active device %s disconnected, auto-blocking", mac)
 		if err := d.bz.setBlocked(mac, true); err != nil {
 			log.Printf("auto-block failed: %v", err)

@@ -25,6 +25,7 @@ func socketPath() string {
 type daemon struct {
 	bz           *bluez
 	activeDevice string // MAC address of the active device
+	prevAudio    *previousAudio
 	mu           sync.Mutex
 }
 
@@ -117,11 +118,19 @@ func (d *daemon) watchSignals(sigCh chan *dbus.Signal) {
 
 		if connected {
 			log.Printf("active device %s connected, switching audio", mac)
-			go switchAudio(mac)
+			prev := switchAudio(mac)
+			d.mu.Lock()
+			d.prevAudio = prev
+			d.mu.Unlock()
 			continue
 		}
 
-		log.Printf("active device %s disconnected, auto-blocking", mac)
+		log.Printf("active device %s disconnected, restoring audio and auto-blocking", mac)
+		d.mu.Lock()
+		prev := d.prevAudio
+		d.prevAudio = nil
+		d.mu.Unlock()
+		restoreAudio(prev)
 		if err := d.bz.setBlocked(mac, true); err != nil {
 			log.Printf("auto-block failed: %v", err)
 		}

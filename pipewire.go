@@ -39,21 +39,24 @@ func setConfiguredDefault(key string, nodeName string) error {
 
 // previousAudio holds the pw-metadata values to restore on disconnect.
 type previousAudio struct {
-	sink   string // JSON value, e.g. {"name":"alsa_output.pci-..."}
-	source string
+	sink   string // runtime default (default.audio.sink)
+	source string // runtime default (default.audio.source)
 }
 
-// switchAudio saves the current configured sink/source, then sets them to the
-// Bluetooth device. Returns the previous values so they can be restored later.
+// switchAudio saves the current runtime default sink/source, then sets the
+// configured defaults to the Bluetooth device. Returns the previous runtime
+// values so they can be restored on disconnect.
 func switchAudio(mac string) *previousAudio {
 	if _, err := exec.LookPath("pw-metadata"); err != nil {
 		log.Printf("audio switch: pw-metadata not found, skipping (install pipewire)")
 		return nil
 	}
 
+	// Save the runtime defaults — these reflect what the user is actually
+	// listening on, which may differ from the configured (persistent) defaults.
 	prev := &previousAudio{
-		sink:   getConfiguredDefault("default.configured.audio.sink"),
-		source: getConfiguredDefault("default.configured.audio.source"),
+		sink:   getConfiguredDefault("default.audio.sink"),
+		source: getConfiguredDefault("default.audio.source"),
 	}
 	log.Printf("audio switch: saved previous sink=%s source=%s", prev.sink, prev.source)
 
